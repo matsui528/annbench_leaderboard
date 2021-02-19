@@ -7,11 +7,23 @@ jobs:
     runs-on: ubuntu-latest
     container: docker://dvcorg/cml-py3:latest
     steps:
-      - name: Checkout code
+      # Clone this repository
+      - name: Checkout this repository
         uses: actions/checkout@v2
+
+      # Clone annbench on ./annbench
+      - name: Checkout annbench
+        uses: actions/checkout@v2
+        with:
+          repository: matsui528/annbench
+          path: annbench
+
       - name: Run annbench
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          ls >> report.md
+          cd annbench
+          echo ====
           ls >> report.md
           cml-send-comment report.md
