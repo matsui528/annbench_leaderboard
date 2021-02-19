@@ -22,8 +22,7 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ls >> report.md
+          ls
           cd annbench
-          echo ====
           ls >> report.md
           cml-send-comment report.md
