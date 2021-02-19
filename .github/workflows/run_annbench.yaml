@@ -1,0 +1,16 @@
+name: run-ann-bench
+
+on: pull_request
+
+jobs:
+  run:    
+    runs-on: ubuntu-latest
+    container: docker://dvcorg/cml-py3:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run annbench
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ls >> report.md
