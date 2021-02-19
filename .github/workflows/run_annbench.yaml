@@ -27,7 +27,6 @@ jobs:
           which python 
           python --version
           pip --version
-          which conda
 
           # ls
           # cd annbench
