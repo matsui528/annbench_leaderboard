@@ -1,9 +1,15 @@
 name: run-ann-bench
 
-on: pull_request
+on:
+  # Triggered for PR-related events (open, re-open, etc)
+  # for the "default_action" branch
+  pull_request:
+    branches:
+      - default_action
 
 jobs:
-  run:    
+  # Run with a CML container. Easy and simple, but w/o anaconda
+  run_cml:    
     runs-on: ubuntu-latest
     container: docker://dvcorg/cml-py3:latest
     steps:
@@ -40,7 +46,7 @@ jobs:
           python plot.py
 
           cd ../
-          # cat ./annbench/result_img/siftsmall.yaml  >> report.md
+          echo "# Run with cml" >> report.md
           cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
           cml-send-comment report.md
 
