@@ -5,7 +5,7 @@ on: pull_request
 jobs:
   run:    
     runs-on: ubuntu-latest
-    container: docker://dvcorg/cml-py3:latest
+    # container: docker://dvcorg/cml-py3:latest
     steps:
       # Clone this repository
       - name: Checkout this repository
@@ -24,5 +24,24 @@ jobs:
         run: |
           ls
           cd annbench
+          ls
           ls >> report.md
-          cml-send-comment report.md
+          # cml-send-comment report.md
+
+
+          # which python 
+          # python --version
+          # pip --version
+          # which conda
+
+          # pip install -r requirements.txt
+          # python download.py dataset=siftsmall
+          # python run.py dataset=siftsmall algo=annoy num_trial=1
+          # python plot.py
+
+          
+
+          # ls
+          # cd annbench
+          # ls >> report.md
+          # cml-send-comment report.md
