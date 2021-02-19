@@ -14,3 +14,4 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ls >> report.md
+          cml-send-comment report.md
