@@ -28,7 +28,8 @@ jobs:
           python --version
           pip --version
 
-          sudo apt-get install libpython3-dev
+          apt install -y byobu
+          apt install -y libpython3-dev
 
           cd annbench
           pip install -r requirements.txt
