@@ -24,8 +24,6 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo apt-get update -y
-          sudo apt-get upgrade -y
           sudo apt-get install -y byobu
           sudo apt-get install -y libpython3-dev
 
