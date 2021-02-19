@@ -18,31 +18,35 @@ jobs:
           repository: matsui528/annbench
           path: annbench
 
+      # Run the benchmark
+      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
       - name: Run annbench
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ls
+          which python 
+          python --version
+          pip --version
+          which conda
+
+          # ls
+          # cd annbench
+          # ls
+          # ls >> ../report.md
+          # cd ..
+          # cml-send-comment report.md
+
           cd annbench
-          ls
-          ls >> ../report.md
+          ls >> report.md
           cd ..
-          cml-send-comment report.md
+          cml-send-comment ./annbench/report.md
 
 
-          # which python 
-          # python --version
-          # pip --version
-          # which conda
 
+          # cd annbench
           # pip install -r requirements.txt
           # python download.py dataset=siftsmall
           # python run.py dataset=siftsmall algo=annoy num_trial=1
           # python plot.py
 
           
-
-          # ls
-          # cd annbench
-          # ls >> report.md
-          # cml-send-comment report.md
