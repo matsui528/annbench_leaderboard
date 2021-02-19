@@ -24,6 +24,7 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          sleep 100
           apt-get update -y
           apt-get upgrade -y
           apt-get install -y byobu
