@@ -4,6 +4,7 @@ A learderboard of [annbench](https://github.com/matsui528/annbench)
 ## Run by CI 
 - Create a `default_action` branch and open a PR.
 - GitHub actions automatically run `annbench` and write a result on the PR page
+- If you want to run again, go to the action page and click "Re-run jobs"
 - Powered by [CML](https://cml.dev/)
 
 ## Result
