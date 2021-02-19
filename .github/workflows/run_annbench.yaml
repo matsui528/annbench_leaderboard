@@ -36,7 +36,7 @@ jobs:
           cd annbench
           pip install -r requirements.txt
           python download.py dataset=siftsmall
-          python run.py --multirun dataset=siftsmall algo=annoy,ivfpq,hnsw
+          python run.py --multirun dataset=siftsmall algo=annoy,hnsw
           python plot.py
 
           cd ../
