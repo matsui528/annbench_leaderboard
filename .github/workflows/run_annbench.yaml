@@ -24,22 +24,24 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # which python 
-          # python --version
-          # pip --version
-
           apt-get install -y byobu
           apt-get install -y libpython3-dev
 
-          # cd annbench
-          # pip install -r requirements.txt
-          # python download.py dataset=siftsmall
-          # python run.py dataset=siftsmall algo=annoy num_trial=1
-          # python plot.py
 
-          # cd ../
-          # cat ./annbench/result_img/siftsmall.yaml  >> report.md
-          # cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
-          # cml-send-comment report.md
+
+        # which python 
+        # python --version
+        # pip --version
+
+        # cd annbench
+        # pip install -r requirements.txt
+        # python download.py dataset=siftsmall
+        # python run.py dataset=siftsmall algo=annoy num_trial=1
+        # python plot.py
+
+        # cd ../
+        # cat ./annbench/result_img/siftsmall.yaml  >> report.md
+        # cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+        # cml-send-comment report.md
 
           
