@@ -1,6 +1,11 @@
 # annbench_leaderboard
 A learderboard of [annbench](https://github.com/matsui528/annbench)
 
+## Run by CI 
+- Create a `default_action` branch and open a PR.
+- GitHub actions automatically run `annbench` and write a result on the PR page
+- Powered by [CML](https://cml.dev/)
+
 ## Result
 - Run on `c5.4xlarge` on AWS, with `Deep Learning AMI (Ubuntu 18.04) Version 27.0 - ami-008d8ed4bd7dc2485`.
 - Evaluated on March 16, 2020
