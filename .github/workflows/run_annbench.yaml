@@ -66,6 +66,12 @@ jobs:
           repository: matsui528/annbench
           path: annbench
 
+      # Install npm command
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+
       # Run the benchmark
       # Note that `cml-send-comment` must be run on the original position (the root of this repo)
       - name: Run annbench
@@ -78,6 +84,8 @@ jobs:
           # apt-get install libpython3-dev
 
           apt-get -y install build-essential
+
+          npm i -g @dvcorg/cml
 
           which python 
           python --version
@@ -92,10 +100,10 @@ jobs:
           python run.py --multirun dataset=siftsmall algo=annoy,hnsw,ivfpq
           python plot.py
 
-          # cd ../
-          # echo "## Run with a conda container" >> report.md
-          # cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
-          # cml-send-comment report.md
+          cd ../
+          echo "## Run with a conda container" >> report.md
+          cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+          cml-send-comment report.md
 
           
 
