@@ -31,9 +31,9 @@ jobs:
   #         repo_token: ${{ secrets.GITHUB_TOKEN }}
   #       run: |
   #         # To install packages in a conatiner, you need to run 'apt-get update' first
-  #         apt-get update
+  #         apt-get -y update
   #         # For pybind11
-  #         apt-get install libpython3-dev
+  #         apt-get -y install libpython3-dev
 
   #         which python 
   #         python --version
@@ -77,7 +77,7 @@ jobs:
           # # For pybind11
           # apt-get install libpython3-dev
 
-          apt-get install build-essential
+          apt-get -y install build-essential
 
           which python 
           python --version
