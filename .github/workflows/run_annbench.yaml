@@ -1,8 +1,11 @@
 name: run-ann-bench
 
 on:
-  # Triggered for PR-related events (open, re-open, etc)
-  # for the "default_action" branch
+  # Trigger the workflow on push or pull request,
+  # but only for the "default_action" branch
+  push:
+    branches:
+      - default_action
   pull_request:
     branches:
       - default_action
@@ -51,4 +54,4 @@ jobs:
           cml-send-comment report.md
 
           
-          
+
