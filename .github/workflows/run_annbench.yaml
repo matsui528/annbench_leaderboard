@@ -5,7 +5,7 @@ on: pull_request
 jobs:
   run:    
     runs-on: ubuntu-latest
-    container: docker://dvcorg/cml-py3:latest
+    # container: docker://dvcorg/cml-py3:latest
     steps:
       # Clone this repository
       - name: Checkout this repository
@@ -24,22 +24,22 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          which python 
-          python --version
-          pip --version
+          # which python 
+          # python --version
+          # pip --version
 
-          apt install -y byobu
-          apt install -y libpython3-dev
+          apt-get install -y byobu
+          apt-get install -y libpython3-dev
 
-          cd annbench
-          pip install -r requirements.txt
-          python download.py dataset=siftsmall
-          python run.py dataset=siftsmall algo=annoy num_trial=1
-          python plot.py
+          # cd annbench
+          # pip install -r requirements.txt
+          # python download.py dataset=siftsmall
+          # python run.py dataset=siftsmall algo=annoy num_trial=1
+          # python plot.py
 
-          cd ../
-          cat ./annbench/result_img/siftsmall.yaml  >> report.md
-          cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
-          cml-send-comment report.md
+          # cd ../
+          # cat ./annbench/result_img/siftsmall.yaml  >> report.md
+          # cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+          # cml-send-comment report.md
 
           
