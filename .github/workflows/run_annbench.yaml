@@ -1,12 +1,9 @@
 name: run-ann-bench
 
 on:
-  # Trigger the workflow on push or pull request,
+  # Trigger the workflow on push,
   # but only for the "default_action" branch
   push:
-    branches:
-      - default_action
-  pull_request:
     branches:
       - default_action
 
