@@ -28,6 +28,8 @@ jobs:
           python --version
           pip --version
 
+          apt install python3-dev
+
           cd annbench
           pip install -r requirements.txt
           python download.py dataset=siftsmall
