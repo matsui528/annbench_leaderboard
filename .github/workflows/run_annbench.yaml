@@ -8,47 +8,47 @@ on:
       - default_action
 
 jobs:
-  # Run with a CML container. Easy and simple, but w/o anaconda
-  run_cml:    
-    runs-on: ubuntu-latest
-    container: docker://dvcorg/cml-py3:latest
-    steps:
-      # Clone this repository
-      - name: Checkout this repository
-        uses: actions/checkout@v2
+  # # Run with a CML container. Easy and simple, but w/o anaconda
+  # run_cml:    
+  #   runs-on: ubuntu-latest
+  #   container: docker://dvcorg/cml-py3:latest
+  #   steps:
+  #     # Clone this repository
+  #     - name: Checkout this repository
+  #       uses: actions/checkout@v2
 
-      # Clone annbench on ./annbench
-      - name: Checkout annbench
-        uses: actions/checkout@v2
-        with:
-          repository: matsui528/annbench
-          path: annbench
+  #     # Clone annbench on ./annbench
+  #     - name: Checkout annbench
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: matsui528/annbench
+  #         path: annbench
 
-      # Run the benchmark
-      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      - name: Run annbench
-        env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # To install packages in a conatiner, you need to run 'apt-get update' first
-          apt-get update
-          # For pybind11
-          apt-get install libpython3-dev
+  #     # Run the benchmark
+  #     # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+  #     - name: Run annbench
+  #       env:
+  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
+  #       run: |
+  #         # To install packages in a conatiner, you need to run 'apt-get update' first
+  #         apt-get update
+  #         # For pybind11
+  #         apt-get install libpython3-dev
 
-          which python 
-          python --version
-          pip --version
+  #         which python 
+  #         python --version
+  #         pip --version
 
-          cd annbench
-          pip install -r requirements.txt
-          python download.py dataset=siftsmall
-          python run.py --multirun dataset=siftsmall algo=annoy,hnsw
-          python plot.py
+  #         cd annbench
+  #         pip install -r requirements.txt
+  #         python download.py dataset=siftsmall
+  #         python run.py --multirun dataset=siftsmall algo=annoy,hnsw
+  #         python plot.py
 
-          cd ../
-          echo "## Run with a cml container" >> report.md
-          cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
-          cml-send-comment report.md
+  #         cd ../
+  #         echo "## Run with a cml container" >> report.md
+  #         cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+  #         cml-send-comment report.md
 
   # Run with an anaconda container. Need to install cml commands manually
   run_conda:    
@@ -76,6 +76,8 @@ jobs:
           # apt-get update
           # # For pybind11
           # apt-get install libpython3-dev
+
+          apt-get install build-essential
 
           which python 
           python --version
