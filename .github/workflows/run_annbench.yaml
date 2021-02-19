@@ -28,24 +28,15 @@ jobs:
           python --version
           pip --version
 
-          # ls
-          # cd annbench
-          # ls
-          # ls >> ../report.md
-          # cd ..
-          # cml-send-comment report.md
-
           cd annbench
-          ls >> report.md
-          cd ..
-          cml-send-comment ./annbench/report.md
+          pip install -r requirements.txt
+          python download.py dataset=siftsmall
+          python run.py dataset=siftsmall algo=annoy num_trial=1
+          python plot.py
 
-
-
-          # cd annbench
-          # pip install -r requirements.txt
-          # python download.py dataset=siftsmall
-          # python run.py dataset=siftsmall algo=annoy num_trial=1
-          # python plot.py
+          cd ../
+          cat ./annbench/result_img/siftsmall.yaml  >> report.md
+          cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+          cml-send-comment report.md
 
           
