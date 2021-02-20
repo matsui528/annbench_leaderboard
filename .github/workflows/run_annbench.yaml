@@ -112,14 +112,13 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          mkdir $DIRNAME
-          ls
+          mkdir ./result_img/`date '+%Y_%m_%d'`
+          ls ./result_img
 
           # mv ./annbench/result_img/sift1m.png ./result_img
           # git add result_img/$DIRNAME/sift1m.png
           # git commit -m "Added artifacts from github actions" -a
-        env:
-          DIRNAME: "`date '+%Y_%m_%d'`"
+
 
       # - name: Push changes
       #   uses: ad-m/github-push-action@master
