@@ -115,6 +115,11 @@ jobs:
           mkdir ./result_img/`date '+%Y_%m_%d'`
           ls ./result_img
 
+          DIR_NAME=`date '+%Y_%m_%d'`
+          mkdir $DIR_NAME
+          ls
+
+
           # mv ./annbench/result_img/sift1m.png ./result_img
           # git add result_img/$DIRNAME/sift1m.png
           # git commit -m "Added artifacts from github actions" -a
