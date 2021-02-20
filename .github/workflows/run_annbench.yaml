@@ -76,6 +76,7 @@ jobs:
 
       - name: Setup libraries
         run: |
+          apt-get -y update
           apt-get -y install build-essential
 
           # Install dvc commands
