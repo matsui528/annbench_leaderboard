@@ -83,8 +83,6 @@ jobs:
           npm i -g @dvcorg/cml
 
       - name: Run annbench
-        env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           which python 
           python --version
@@ -103,6 +101,8 @@ jobs:
 
       # Note that `cml-send-comment` must be run on the original position (the root of this repo)
       - name: Publish result by CML
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "## Run with a conda container" >> report.md
           cml-publish ./annbench/result_img/sift1m.png --md >> report.md
