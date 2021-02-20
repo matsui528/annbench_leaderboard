@@ -74,38 +74,55 @@ jobs:
         with:
           node-version: '12'
 
-      - name: Setup libraries
-        run: |
-          apt-get -y update
-          apt-get -y install build-essential
+      # - name: Setup libraries
+      #   run: |
+      #     apt-get -y update
+      #     apt-get -y install build-essential
 
-          # Install dvc commands
-          npm i -g @dvcorg/cml
+      #     # Install dvc commands
+      #     npm i -g @dvcorg/cml
 
-      - name: Run annbench
-        env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          which python 
-          python --version
-          pip --version
-          which conda
-          conda --version
+      # - name: Run annbench
+      #   env:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     which python 
+      #     python --version
+      #     pip --version
+      #     which conda
+      #     conda --version
 
-          cd annbench
-          pip install -r requirements.txt
-          conda install faiss-cpu -y -c pytorch
-          python download.py dataset=sift1m
-          python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw
-          python plot.py
-          cd ../
+      #     cd annbench
+      #     pip install -r requirements.txt
+      #     conda install faiss-cpu -y -c pytorch
+      #     python download.py dataset=sift1m
+      #     python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw
+      #     python plot.py
+      #     cd ../
 
-      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      - name: Publish result by CML
-        run: |
-          echo "## Run with a conda container" >> report.md
-          cml-publish ./annbench/result_img/sift1m.png --md >> report.md
-          cml-send-comment report.md
+      # # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+      # - name: Publish result by CML
+      #   run: |
+      #     echo "## Run with a conda container" >> report.md
+      #     cml-publish ./annbench/result_img/sift1m.png --md >> report.md
+      #     cml-send-comment report.md
 
+      - name: Commit the result
+        run: |  
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           
+          mkdir $DIRNAME
+          ls
+
+          # mv ./annbench/result_img/sift1m.png ./result_img
+          # git add result_img/$DIRNAME/sift1m.png
+          # git commit -m "Added artifacts from github actions" -a
+        env:
+          DIRNAME: date '+%Y_%m_%d'
+
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
 
