@@ -33,8 +33,8 @@ jobs:
       # Install dependencies
       - name: Setup libraries
         run: |
-          apt-get -y update
-          apt-get -y install build-essential
+          sudo apt-get -y update
+          sudo apt-get -y install build-essential
 
           # Install dvc commands
           npm i -g @dvcorg/cml
