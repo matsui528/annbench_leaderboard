@@ -13,7 +13,9 @@ jobs:
     steps:
     - name: test
       run: |
-        df -h
+        ec2metadata | grep ami-id: 
+        ec2metadata | grep instance-type:
+
 
 # jobs:
 #   # Run with an anaconda container. Need to install cml commands manually
