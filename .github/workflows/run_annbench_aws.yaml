@@ -64,7 +64,9 @@ jobs:
       # Note that `cml-send-comment` must be run on the original position (the root of this repo)
       - name: Publish result by CML
         env:
-          repo_token: ${{ secrets.REPO_TOKEN}}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+          # repo_token: ${{ secrets.REPO_TOKEN}}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
