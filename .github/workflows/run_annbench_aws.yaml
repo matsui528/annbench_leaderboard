@@ -35,10 +35,15 @@ jobs:
       - name: Setup libraries
         run: |
           sudo apt-get -y update
+          sudo apt-get -y upgrade
           sudo apt-get -y install build-essential
 
           # Install dvc commands
           npm i -g @dvcorg/cml
+
+          # EC2 environment is not brand-new. Would it be better to update everything?
+          conda update conda
+          conda update --all
 
       - name: Run annbench
         run: |
@@ -48,9 +53,6 @@ jobs:
           which conda
           conda --version
           
-          ec2metadata | grep ami-id: 
-          ec2metadata | grep instance-type:
-
           cd annbench
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
