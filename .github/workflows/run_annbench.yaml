@@ -24,17 +24,16 @@ jobs:
           repository: matsui528/annbench
           path: annbench
 
-      # Run the benchmark
-      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      - name: Run annbench
-        env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+      # Install dependencies. Reccomend to run `apt-get update` first
+      - name: Setup libraries
         run: |
-          # To install packages in a CML conatiner, you need to run 'apt-get update' first
           apt-get -y update
           # For pybind11
           apt-get -y install libpython3-dev
 
+      # Run the benchmark
+      - name: Run annbench
+        run: |
           which python 
           python --version
           pip --version
@@ -44,11 +43,17 @@ jobs:
           python download.py dataset=siftsmall
           python run.py --multirun dataset=siftsmall algo=annoy,hnsw
           python plot.py
-
           cd ../
+
+      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+      - name: Publish the result by CML
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           echo "## Run with a cml container" >> report.md
           cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
           cml-send-comment report.md
+
 
   # Run with an anaconda container. Need to install cml commands manually
   run_conda:    
@@ -72,17 +77,18 @@ jobs:
         with:
           node-version: '12'
 
-      # Run the benchmark
-      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      - name: Run annbench
-        env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+      # Install dependencies. Reccomend to run `apt-get update` first
+      - name: Setup libraries
         run: |
+          apt-get -y update
           apt-get -y install build-essential
 
           # Install dvc commands
           npm i -g @dvcorg/cml
 
+      # Run the benchmark
+      - name: Run annbench
+        run: |
           which python 
           python --version
           pip --version
@@ -93,13 +99,17 @@ jobs:
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
           python download.py dataset=siftsmall
-          python run.py --multirun dataset=siftsmall algo=annoy,hnsw,ivfpq
+          python run.py --multirun dataset=siftsmall algo=linear,annoy,hnsw,ivfpq
           python plot.py
-
           cd ../
+
+      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+      - name: Publish the result by CML
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           echo "## Run with a conda container" >> report.md
           cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
           cml-send-comment report.md
 
-          
 
