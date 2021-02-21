@@ -52,6 +52,10 @@ jobs:
           pip --version
           which conda
           conda --version
+
+          ec2metadata | grep ami-id: >> report.md
+          echo "- " >> report.md
+          ec2metadata | grep instance-type: >> report.md
           
           cd annbench
           pip install -r requirements.txt
@@ -61,44 +65,37 @@ jobs:
           python plot.py
           cd ../
 
-      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      - name: Publish result by CML
-        env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+      # Currently, cml does not seem available from a manually configured self-hosted ec2 runner
+      # # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+      # - name: Publish result by CML
+      #   env:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     echo "## Run with an ec2" >> report.md
+      #     echo "- " >> report.md
+      #     ec2metadata | grep ami-id: >> report.md
+      #     echo "- " >> report.md
+      #     ec2metadata | grep instance-type: >> report.md
+      #     cml-publish ./annbench/result_img/sift1m.png --md >> report.md
+      #     cml-send-comment report.md
 
-          # repo_token: ${{ secrets.REPO_TOKEN}}
-        run: |
-          pwd
-
-          # git config --local user.email "action@github.com"
-          # git config --local user.name "GitHub Action"
-
-          echo "## Run with an ec2" >> report.md
-          echo "- " >> report.md
-          ec2metadata | grep ami-id: >> report.md
-          echo "- " >> report.md
-          ec2metadata | grep instance-type: >> report.md
-          cml-publish ./annbench/result_img/sift1m.png --md >> report.md
-          cml-send-comment report.md
-
-#       # - name: Commit the result
-#       #   run: |  
-#       #     git config --local user.email "action@github.com"
-#       #     git config --local user.name "GitHub Action"
+      - name: Commit the result
+        run: |  
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           
-#       #     DIR_NAME=`date '+%Y_%m_%d'`
-#       #     mkdir -p ./result_img/$DIR_NAME
+          DIR_NAME=`date '+%Y_%m_%d'`
+          mkdir -p ./result_img/$DIR_NAME
 
-#       #     mv ./annbench/result_img/sift1m.png ./result_img/$DIR_NAME
-#       #     mv ./annbench/result_img/sift1m.yaml ./result_img/$DIR_NAME
+          mv ./annbench/result_img/siftsmall.png ./result_img/$DIR_NAME
+          mv ./annbench/result_img/siftsmall.yaml ./result_img/$DIR_NAME
 
-#       #     git add result_img
-#       #     git commit -m "Added artifacts from github actions" -a
+          git add result_img
+          git commit -m "Added artifacts from github actions" -a
 
-
-#       # - name: Push
-#       #   uses: ad-m/github-push-action@master
-#       #   with:
-#       #     github_token: ${{ secrets.GITHUB_TOKEN }}
-#       #     branch: ${{ github.ref }}
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
 
