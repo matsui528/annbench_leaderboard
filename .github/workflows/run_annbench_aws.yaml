@@ -8,83 +8,91 @@ on:
       - aws_action
 
 jobs:
-  # Run with an anaconda container. Need to install cml commands manually
-  run_conda:    
-    runs-on: ubuntu-latest
-    container: docker://continuumio/anaconda3:latest
+  run_conda:
+    runs-on: self-hosted
     steps:
-      # Clone this repository
-      - name: Checkout this repository
-        uses: actions/checkout@v2
+    - name: test
+      run: |
+        df -h
 
-      # Clone annbench on ./annbench
-      - name: Checkout annbench
-        uses: actions/checkout@v2
-        with:
-          repository: matsui528/annbench
-          path: annbench
+# jobs:
+#   # Run with an anaconda container. Need to install cml commands manually
+#   run_conda:    
+#     runs-on: self-hosted
+#     container: docker://continuumio/anaconda3:latest
+#     steps:
+#       # Clone this repository
+#       - name: Checkout this repository
+#         uses: actions/checkout@v2
 
-      # Install Node for npm
-      - name: Install Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: '12'
+#       # Clone annbench on ./annbench
+#       - name: Checkout annbench
+#         uses: actions/checkout@v2
+#         with:
+#           repository: matsui528/annbench
+#           path: annbench
 
-      # Install dependencies
-      - name: Setup libraries
-        run: |
-          apt-get -y update
-          apt-get -y install build-essential
+#       # Install Node for npm
+#       - name: Install Node
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: '12'
 
-          # Install dvc commands
-          npm i -g @dvcorg/cml
+#       # Install dependencies
+#       - name: Setup libraries
+#         run: |
+#           apt-get -y update
+#           apt-get -y install build-essential
 
-      - name: Run annbench
-        run: |
-          which python 
-          python --version
-          pip --version
-          which conda
-          conda --version
+#           # Install dvc commands
+#           npm i -g @dvcorg/cml
+
+#       - name: Run annbench
+#         run: |
+#           which python 
+#           python --version
+#           pip --version
+#           which conda
+#           conda --version
           
-          ec2metadata | grep ami-id: 
-          ec2metadata | grep instance-type:
+#           ec2metadata | grep ami-id: 
+#           ec2metadata | grep instance-type:
 
-          # cd annbench
-          # pip install -r requirements.txt
-          # conda install faiss-cpu -y -c pytorch
-          # python download.py dataset=sift1m
-          # python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw
-          # python plot.py
-          # cd ../
+#           # cd annbench
+#           # pip install -r requirements.txt
+#           # conda install faiss-cpu -y -c pytorch
+#           # python download.py dataset=sift1m
+#           # python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw
+#           # python plot.py
+#           # cd ../
 
-      # # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      # - name: Publish result by CML
-      #   env:
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     echo "## Run with a conda container" >> report.md
-      #     cml-publish ./annbench/result_img/sift1m.png --md >> report.md
-      #     cml-send-comment report.md
+#       # # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+#       # - name: Publish result by CML
+#       #   env:
+#       #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+#       #   run: |
+#       #     echo "## Run with a conda container" >> report.md
+#       #     cml-publish ./annbench/result_img/sift1m.png --md >> report.md
+#       #     cml-send-comment report.md
 
-      # - name: Commit the result
-      #   run: |  
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
+#       # - name: Commit the result
+#       #   run: |  
+#       #     git config --local user.email "action@github.com"
+#       #     git config --local user.name "GitHub Action"
           
-      #     DIR_NAME=`date '+%Y_%m_%d'`
-      #     mkdir -p ./result_img/$DIR_NAME
+#       #     DIR_NAME=`date '+%Y_%m_%d'`
+#       #     mkdir -p ./result_img/$DIR_NAME
 
-      #     mv ./annbench/result_img/sift1m.png ./result_img/$DIR_NAME
-      #     mv ./annbench/result_img/sift1m.yaml ./result_img/$DIR_NAME
+#       #     mv ./annbench/result_img/sift1m.png ./result_img/$DIR_NAME
+#       #     mv ./annbench/result_img/sift1m.yaml ./result_img/$DIR_NAME
 
-      #     git add result_img
-      #     git commit -m "Added artifacts from github actions" -a
+#       #     git add result_img
+#       #     git commit -m "Added artifacts from github actions" -a
 
 
-      # - name: Push
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: ${{ github.ref }}
+#       # - name: Push
+#       #   uses: ad-m/github-push-action@master
+#       #   with:
+#       #     github_token: ${{ secrets.GITHUB_TOKEN }}
+#       #     branch: ${{ github.ref }}
 
