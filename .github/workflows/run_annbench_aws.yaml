@@ -10,6 +10,7 @@ on:
 jobs:
   run_conda:
     runs-on: self-hosted
+    container: docker://continuumio/anaconda3:latest
     steps:
     - name: test
       run: |
