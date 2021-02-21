@@ -64,7 +64,7 @@ jobs:
       # Note that `cml-send-comment` must be run on the original position (the root of this repo)
       - name: Publish result by CML
         env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.REPO_TOKEN}}
         run: |
           echo "## Run with an ec2" >> report.md
           echo "- " >> report.md
