@@ -69,7 +69,6 @@ jobs:
           conda update conda
           conda update --all
 
-
       - name: Run annbench
         run: |
           which python 
@@ -81,13 +80,11 @@ jobs:
           cd annbench
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
-          python download.py dataset=siftsmall
-          # python run.py --multirun dataset=siftsmall algo=linear,annoy,ivfpq,hnsw
-          python run.py --multirun dataset=siftsmall algo=hnsw
+          python download.py dataset=sift1m
+          python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw
           python plot.py
           cd ../
 
-      # Currently, cml does not seem available from a manually configured self-hosted ec2 runner
       # Note that `cml-send-comment` must be run on the original position (the root of this repo)
       - name: Publish result by CML
         env:
@@ -98,7 +95,7 @@ jobs:
           ec2metadata | grep ami-id: >> report.md
           echo -n "- " >> report.md
           ec2metadata | grep instance-type: >> report.md
-          cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+          cml-publish ./annbench/result_img/sift1m.png --md >> report.md
           cml-send-comment report.md
 
       - name: Commit the result
@@ -109,9 +106,10 @@ jobs:
           DIR_NAME=`date '+%Y_%m_%d'`
           mkdir -p ./result_img/$DIR_NAME
 
-          mv ./annbench/result_img/siftsmall.png ./result_img/$DIR_NAME
-          mv ./annbench/result_img/siftsmall.yaml ./result_img/$DIR_NAME
+          mv ./annbench/result_img/sift1m.png ./result_img/$DIR_NAME
+          mv ./annbench/result_img/sift1m.yaml ./result_img/$DIR_NAME
 
+          # Report the EC2 spec as well
           echo -n "- " >> ./result_img/$DIR_NAME/spec.md
           ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
           echo -n "- " >> ./result_img/$DIR_NAME/spec.md
@@ -119,7 +117,6 @@ jobs:
 
           git add result_img
           git commit -m "Added artifacts from github actions" -a
-
 
       - name: Push
         uses: ad-m/github-push-action@master
