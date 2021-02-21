@@ -1,0 +1,128 @@
+name: run-ann-bench-aws
+
+on:
+  # Trigger the workflow on push,
+  # but only for the "aws_action" branch
+  push:
+    branches:
+      - aws_action
+
+jobs:
+  # Run on AWS EC2. Note that ami must be Deep Learning AMI.
+  # There could be some options:
+  # - Ubuntu AMI:
+  #     - pros: Simple
+  #     - cons: Need to manually install docker or conda. Unlike ubuntu-latest in gh-action, ubuntu ami in aws does not have a docker
+  # - Deep Learning Base AMI + Anaconda-Docker
+  #     - pros: Docker can be latest (i.e., latest conda, latest git, etc)
+  #     - cons: AMI with Docker seem too much. ec2-native command such as ec2metadata cannot be called
+  # - Deep Learning AMI
+  #     - pros: No need to install other dependencies since anaconda has been already installed
+  #     - cons: Some packages are old, such as git and coda. 
+  # Currently, I selected the last option, DL-AMI.
+  run_aws:
+    runs-on: self-hosted
+    steps:
+      # Currently, cml-publishing and git-commiting fail if git version is old (such as 2.17.1)
+      # If the git version is old, `.git` is not created
+      # Updating git solves the issue
+      # https://github.com/actions/checkout/issues/335#issuecomment-763159788
+      - name: Bug fix for git
+        run: |
+          git --version
+          sudo apt-get install -y software-properties-common
+          sudo apt-get update
+          sudo add-apt-repository -y ppa:git-core/ppa
+          sudo apt-get update
+          sudo apt-get install -y git
+          git --version
+
+      # Clone this repository
+      - name: Checkout this repository
+        uses: actions/checkout@v2
+
+      # Clone annbench on ./annbench
+      - name: Checkout annbench
+        uses: actions/checkout@v2
+        with:
+          repository: matsui528/annbench
+          path: annbench
+
+      # Install Node for npm
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+
+      # Install dependencies
+      # Note that you need "sudo" for self-hosted runner
+      - name: Setup libraries
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y upgrade
+          sudo apt-get -y install build-essential
+
+          # Install dvc commands
+          npm i -g @dvcorg/cml
+
+          # EC2 environment is not brand-new. Would it be better to update everything?
+          conda update conda
+          conda update --all
+
+      - name: Run annbench
+        run: |
+          which python 
+          python --version
+          pip --version
+          which conda
+          conda --version
+         
+          cd annbench
+          pip install -r requirements.txt
+          conda install faiss-cpu -y -c pytorch
+          python download.py dataset=sift1m
+          python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw
+          python plot.py
+          cd ../
+
+      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+      - name: Publish result by CML
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## Run with an ec2" >> report.md
+          echo -n "- " >> report.md
+          ec2metadata | grep ami-id: >> report.md
+          echo -n "- " >> report.md
+          ec2metadata | grep instance-type: >> report.md
+          cml-publish ./annbench/result_img/sift1m.png --md >> report.md
+          cml-send-comment report.md
+
+      - name: Commit the result
+        run: |  
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          DIR_NAME=`date '+%Y_%m_%d'`
+          mkdir -p ./result_img/$DIR_NAME
+
+          mv ./annbench/result_img/sift1m.png ./result_img/$DIR_NAME
+          mv ./annbench/result_img/sift1m.yaml ./result_img/$DIR_NAME
+
+          # Report the EC2 spec as well
+          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+          ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
+          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+          ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
+
+          git add result_img
+          git commit -m "Added artifacts from github actions" -a
+
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+
+
