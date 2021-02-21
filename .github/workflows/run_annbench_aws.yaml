@@ -12,7 +12,6 @@ jobs:
   # It is because we would like to use conda without docker, otherwise we need to manually install docker
   run_aws:
     runs-on: self-hosted
-    container: docker://continuumio/anaconda3:latest
     steps:
       # Clone this repository
       - name: Checkout this repository
@@ -35,10 +34,8 @@ jobs:
       # Note that you need "sudo" for self-hosted runner
       - name: Setup libraries
         run: |
-          # sudo apt-get -y update
-          # sudo apt-get -y install build-essential
-          apt-get -y update
-          apt-get -y install build-essential
+          sudo apt-get -y update
+          sudo apt-get -y install build-essential
 
           # Install dvc commands
           npm i -g @dvcorg/cml
