@@ -50,7 +50,7 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "## Run with a conda container" >> report.md
+          echo "## Run with a cml container" >> report.md
           cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
           cml-send-comment report.md
 
