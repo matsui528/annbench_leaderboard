@@ -1,11 +1,16 @@
 # annbench_leaderboard
 A learderboard of [annbench](https://github.com/matsui528/annbench)
 
-## Run by CI 
+## Run by CI (via native gh-action machines)
 - Create a `default_action` branch and open a PR.
-- GitHub actions automatically run `annbench` and write a result on the PR page
+- GitHub actions automatically run `annbench` and write a result on the PR page (powered by [CML](https://cml.dev/))
 - If you want to run again, go to the action page and click "Re-run jobs"
-- Powered by [CML](https://cml.dev/)
+- This CI is for a quick test of algorithms and datasets.
+
+## Run by CI (via aws ec2)
+- Launch an aws instance (latest Ubuntu)
+- Set the instance as a self-hosted runner at GitHub setting
+
 
 ## Result
 - Run on `c5.4xlarge` on AWS, with `Deep Learning AMI (Ubuntu 18.04) Version 27.0 - ami-008d8ed4bd7dc2485`.
