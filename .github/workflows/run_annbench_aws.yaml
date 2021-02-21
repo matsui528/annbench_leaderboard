@@ -8,46 +8,36 @@ on:
       - aws_action
 
 jobs:
-  run_conda:
+  # Run on AWS EC2. Note that ami must be Deep Learning Base AMI.
+  # It is because we would like to use conda without docker, otherwise we need to manually install docker
+  run_aws:
     runs-on: self-hosted
     steps:
-    - name: test
-      run: |
-        ec2metadata | grep ami-id: 
-        ec2metadata | grep instance-type:
+      # Clone this repository
+      - name: Checkout this repository
+        uses: actions/checkout@v2
 
+      # Clone annbench on ./annbench
+      - name: Checkout annbench
+        uses: actions/checkout@v2
+        with:
+          repository: matsui528/annbench
+          path: annbench
 
-# jobs:
-#   # Run with an anaconda container. Need to install cml commands manually
-#   run_conda:    
-#     runs-on: self-hosted
-#     container: docker://continuumio/anaconda3:latest
-#     steps:
-#       # Clone this repository
-#       - name: Checkout this repository
-#         uses: actions/checkout@v2
+      # Install Node for npm
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
 
-#       # Clone annbench on ./annbench
-#       - name: Checkout annbench
-#         uses: actions/checkout@v2
-#         with:
-#           repository: matsui528/annbench
-#           path: annbench
+      # Install dependencies
+      - name: Setup libraries
+        run: |
+          apt-get -y update
+          apt-get -y install build-essential
 
-#       # Install Node for npm
-#       - name: Install Node
-#         uses: actions/setup-node@v1
-#         with:
-#           node-version: '12'
-
-#       # Install dependencies
-#       - name: Setup libraries
-#         run: |
-#           apt-get -y update
-#           apt-get -y install build-essential
-
-#           # Install dvc commands
-#           npm i -g @dvcorg/cml
+          # Install dvc commands
+          npm i -g @dvcorg/cml
 
 #       - name: Run annbench
 #         run: |
