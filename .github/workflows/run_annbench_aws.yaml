@@ -13,6 +13,19 @@ jobs:
   run_aws:
     runs-on: self-hosted
     steps:
+      # Not sure the reason, but cml and git fail if git version is old (such as 2.17.1)
+      # Updating git solves the issue
+      # https://github.com/actions/checkout/issues/335#issuecomment-763159788
+      - name: Bug fix for git
+        run: |
+          git --version
+          sudo apt-get install -y software-properties-common
+          sudo apt-get update
+          sudo add-apt-repository -y ppa:git-core/ppa
+          sudo apt-get update
+          sudo apt-get install -y git
+          git --version
+
       # Clone this repository
       - name: Checkout this repository
         uses: actions/checkout@v2
@@ -45,6 +58,7 @@ jobs:
           conda update conda
           conda update --all
 
+
       - name: Run annbench
         run: |
           which python 
@@ -61,23 +75,24 @@ jobs:
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
           python download.py dataset=siftsmall
-          python run.py --multirun dataset=siftsmall algo=linear,annoy,ivfpq,hnsw
+          # python run.py --multirun dataset=siftsmall algo=linear,annoy,ivfpq,hnsw
+          python run.py --multirun dataset=siftsmall algo=hnsw
           python plot.py
           cd ../
 
       # Currently, cml does not seem available from a manually configured self-hosted ec2 runner
-      # # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      # - name: Publish result by CML
-      #   env:
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     echo "## Run with an ec2" >> report.md
-      #     echo "- " >> report.md
-      #     ec2metadata | grep ami-id: >> report.md
-      #     echo "- " >> report.md
-      #     ec2metadata | grep instance-type: >> report.md
-      #     cml-publish ./annbench/result_img/sift1m.png --md >> report.md
-      #     cml-send-comment report.md
+      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+      - name: Publish result by CML
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## Run with an ec2" >> report.md
+          echo "- " >> report.md
+          ec2metadata | grep ami-id: >> report.md
+          echo "- " >> report.md
+          ec2metadata | grep instance-type: >> report.md
+          cml-publish ./annbench/result_img/sift1m.png --md >> report.md
+          cml-send-comment report.md
 
       - name: Commit the result
         run: |  
