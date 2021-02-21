@@ -8,10 +8,11 @@ on:
       - aws_action
 
 jobs:
-  # Run on AWS EC2. Note that ami must be Deep Learning Base AMI.
+  # Run on AWS EC2. Note that ami must be Deep Learning AMI.
   # It is because we would like to use conda without docker, otherwise we need to manually install docker
   run_aws:
     runs-on: self-hosted
+    container: docker://continuumio/anaconda3:latest
     steps:
       # Clone this repository
       - name: Checkout this repository
