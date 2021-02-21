@@ -108,6 +108,9 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
           echo "## Run with a conda container" >> report.md
           cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
           cml-send-comment report.md
