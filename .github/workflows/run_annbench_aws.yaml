@@ -31,6 +31,7 @@ jobs:
           node-version: '12'
 
       # Install dependencies
+      # Note that you need "sudo" for self-hosted runner
       - name: Setup libraries
         run: |
           sudo apt-get -y update
@@ -39,33 +40,37 @@ jobs:
           # Install dvc commands
           npm i -g @dvcorg/cml
 
-#       - name: Run annbench
-#         run: |
-#           which python 
-#           python --version
-#           pip --version
-#           which conda
-#           conda --version
+      - name: Run annbench
+        run: |
+          which python 
+          python --version
+          pip --version
+          which conda
+          conda --version
           
-#           ec2metadata | grep ami-id: 
-#           ec2metadata | grep instance-type:
+          ec2metadata | grep ami-id: 
+          ec2metadata | grep instance-type:
 
-#           # cd annbench
-#           # pip install -r requirements.txt
-#           # conda install faiss-cpu -y -c pytorch
-#           # python download.py dataset=sift1m
-#           # python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw
-#           # python plot.py
-#           # cd ../
+          cd annbench
+          pip install -r requirements.txt
+          conda install faiss-cpu -y -c pytorch
+          python download.py dataset=siftsmall
+          python run.py --multirun dataset=siftsmall algo=linear,annoy,ivfpq,hnsw
+          python plot.py
+          cd ../
 
-#       # # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-#       # - name: Publish result by CML
-#       #   env:
-#       #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-#       #   run: |
-#       #     echo "## Run with a conda container" >> report.md
-#       #     cml-publish ./annbench/result_img/sift1m.png --md >> report.md
-#       #     cml-send-comment report.md
+      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+      - name: Publish result by CML
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## Run with an ec2" >> report.md
+          echo "- " >> report.md
+          ec2metadata | grep ami-id: >> report.md
+          echo "- " >> report.md
+          ec2metadata | grep instance-type: >> report.md
+          cml-publish ./annbench/result_img/sift1m.png --md >> report.md
+          cml-send-comment report.md
 
 #       # - name: Commit the result
 #       #   run: |  
