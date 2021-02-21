@@ -9,7 +9,17 @@ on:
 
 jobs:
   # Run on AWS EC2. Note that ami must be Deep Learning AMI.
-  # It is because we would like to use conda without docker, otherwise we need to manually install docker
+  # There could be some options:
+  # - Ubuntu AMI:
+  #     - pros: Simple
+  #     - cons: Need to manually install docker or conda. Unlike ubuntu-latest in gh-action, ubuntu ami in aws does not have a docker
+  # - Deep Learning Base AMI + Anaconda-Docker
+  #     - pros: Docker can be latest (i.e., latest conda, latest git, etc)
+  #     - cons: AMI with Docker seem too much. ec2-native command such as ec2metadata cannot be called
+  # - Deep Learning AMI
+  #     - pros: No need to install other dependencies since anaconda has been already installed
+  #     - cons: Some packages are old, such as git and coda. 
+  # Currently, I selected the last option, DL-AMI.
   run_aws:
     runs-on: self-hosted
     steps:
@@ -102,12 +112,20 @@ jobs:
           mv ./annbench/result_img/siftsmall.png ./result_img/$DIR_NAME
           mv ./annbench/result_img/siftsmall.yaml ./result_img/$DIR_NAME
 
+          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+          ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
+          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+          ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
+
           git add result_img
           git commit -m "Added artifacts from github actions" -a
+
 
       - name: Push
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
+
+
 
