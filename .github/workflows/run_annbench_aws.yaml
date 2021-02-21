@@ -90,7 +90,7 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "## Run with an ec2" >> report.md
+          echo "## Run with an EC2 instance" >> report.md
           echo -n "- " >> report.md
           ec2metadata | grep ami-id: >> report.md
           echo -n "- " >> report.md
