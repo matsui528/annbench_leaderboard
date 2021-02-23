@@ -80,8 +80,8 @@ jobs:
           cd annbench
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
-          python download.py dataset=sift1m
-          python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw
+          python download.py --multirun dataset=sift1m,deep1m
+          python run.py --multirun dataset=sift1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
           python plot.py
           cd ../
 
@@ -96,33 +96,32 @@ jobs:
           echo -n "- " >> report.md
           ec2metadata | grep instance-type: >> report.md
           cml-publish ./annbench/result_img/sift1m.png --md >> report.md
+          cml-publish ./annbench/result_img/deep1m.png --md >> report.md
           cml-send-comment report.md
 
-      - name: Commit the result
-        run: |  
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+      # - name: Commit the result
+      #   run: |  
+      #     git config --local user.email "action@github.com"
+      #     git config --local user.name "GitHub Action"
           
-          DIR_NAME=`date '+%Y_%m_%d'`
-          mkdir -p ./result_img/$DIR_NAME
+      #     DIR_NAME=`date '+%Y_%m_%d'`
+      #     mkdir -p ./result_img/$DIR_NAME
+      #     cp ./annbench/result_img/* ./result_img/$DIR_NAME
 
-          mv ./annbench/result_img/sift1m.png ./result_img/$DIR_NAME
-          mv ./annbench/result_img/sift1m.yaml ./result_img/$DIR_NAME
+      #     # Report the EC2 spec as well
+      #     echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+      #     ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
+      #     echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+      #     ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
 
-          # Report the EC2 spec as well
-          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
-          ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
-          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
-          ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
+      #     git add result_img
+      #     git commit -m "Added artifacts from github actions" -a
 
-          git add result_img
-          git commit -m "Added artifacts from github actions" -a
-
-      - name: Push
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+      # - name: Push
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: ${{ github.ref }}
 
 
 
