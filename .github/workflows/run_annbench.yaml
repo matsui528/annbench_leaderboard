@@ -99,7 +99,7 @@ jobs:
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
           python download.py dataset=siftsmall
-          python run.py --multirun dataset=siftsmall algo=linear,annoy,hnsw,ivfpq
+          python run.py --multirun dataset=siftsmall algo=linear,annoy,hnsw,ivfpq,ivfpq4bit
           python plot.py
           cd ../
 
