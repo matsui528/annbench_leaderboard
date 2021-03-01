@@ -55,6 +55,10 @@ jobs:
         with:
           miniconda-version: "latest"
           python-version: 3.8
+        run: |
+          which python
+          conda activate test
+          which python
         
       # Install CML functions
       - name: Setup CML
