@@ -57,19 +57,16 @@ jobs:
           python-version: 3.8
 
       # Install Node for npm (Should this be done in the "Setup CML"?)
-      # - name: Install Node
-      #   uses: actions/setup-node@v1
-      #   with:
-      #     node-version: '12'
-
       - name: Install Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v1
         with:
-          node-version: '14'
+          node-version: '12'
+        run: npm i -g @dvcorg/cml
 
-      # Install CML functions
-      - name: Setup CML
-        uses: iterative/setup-cml@v1
+
+      # # Install CML functions
+      # - name: Setup CML
+      #   uses: iterative/setup-cml@v1
 
       # # Install dependencies
       # # Note that you need "sudo" for self-hosted runner
