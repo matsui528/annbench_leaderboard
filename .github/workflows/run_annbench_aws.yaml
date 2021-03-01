@@ -82,18 +82,13 @@ jobs:
       #     conda update --all
 
       - name: Run annbench
+        shell: bash -l {0}
         run: |
           which python 
           python --version
           pip --version
           which conda
           conda --version
-
-          conda activate test
-          which python 
-          python --version
-          which pip
-          pip --version
          
           cd annbench
           pip install -r requirements.txt
