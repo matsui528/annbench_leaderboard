@@ -55,10 +55,6 @@ jobs:
         with:
           miniconda-version: "latest"
           python-version: 3.8
-        run: |
-          which python
-          conda activate test
-          which python
         
       # Install CML functions
       - name: Setup CML
@@ -92,6 +88,12 @@ jobs:
           pip --version
           which conda
           conda --version
+
+          conda activate test
+          which python 
+          python --version
+          which pip
+          pip --version
          
           cd annbench
           pip install -r requirements.txt
