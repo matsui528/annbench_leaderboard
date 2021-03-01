@@ -21,21 +21,22 @@ jobs:
   #     - cons: Some packages are old, such as git and coda. 
   # Currently, I selected the last option, DL-AMI.
   run_aws:
-    runs-on: self-hosted
+#    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
-      # Currently, cml-publishing and git-commiting fail if git version is old (such as 2.17.1)
-      # If the git version is old, `.git` is not created
-      # Updating git solves the issue
-      # https://github.com/actions/checkout/issues/335#issuecomment-763159788
-      - name: Bug fix for git
-        run: |
-          git --version
-          sudo apt-get install -y software-properties-common
-          sudo apt-get update
-          sudo add-apt-repository -y ppa:git-core/ppa
-          sudo apt-get update
-          sudo apt-get install -y git
-          git --version
+      # # Currently, cml-publishing and git-commiting fail if git version is old (such as 2.17.1)
+      # # If the git version is old, `.git` is not created
+      # # Updating git solves the issue
+      # # https://github.com/actions/checkout/issues/335#issuecomment-763159788
+      # - name: Bug fix for git
+      #   run: |
+      #     git --version
+      #     sudo apt-get install -y software-properties-common
+      #     sudo apt-get update
+      #     sudo add-apt-repository -y ppa:git-core/ppa
+      #     sudo apt-get update
+      #     sudo apt-get install -y git
+      #     git --version
 
       # Clone this repository
       - name: Checkout this repository
@@ -48,26 +49,36 @@ jobs:
           repository: matsui528/annbench
           path: annbench
 
-      # Install Node for npm
-      - name: Install Node
-        uses: actions/setup-node@v1
+      # Install the latest miniconda. The "test" environment is activated 
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          node-version: '12'
+          miniconda-version: "latest"
+        
+      # Install CML functions
+      - name: Setup CML
+        uses: iterative/setup-cml@v1
 
-      # Install dependencies
-      # Note that you need "sudo" for self-hosted runner
-      - name: Setup libraries
-        run: |
-          sudo apt-get -y update
-          sudo apt-get -y upgrade
-          sudo apt-get -y install build-essential
+      # # Install Node for npm
+      # - name: Install Node
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: '12'
 
-          # Install dvc commands
-          npm i -g @dvcorg/cml
+      # # Install dependencies
+      # # Note that you need "sudo" for self-hosted runner
+      # - name: Setup libraries
+      #   run: |
+      #     sudo apt-get -y update
+      #     sudo apt-get -y upgrade
+      #     sudo apt-get -y install build-essential
 
-          # EC2 environment is not brand-new. Would it be better to update everything?
-          conda update conda
-          conda update --all
+      #     # Install dvc commands
+      #     npm i -g @dvcorg/cml
+
+      #     # EC2 environment is not brand-new. Would it be better to update everything?
+      #     conda update conda
+      #     conda update --all
 
       - name: Run annbench
         run: |
@@ -80,8 +91,10 @@ jobs:
           cd annbench
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
-          python download.py --multirun dataset=sift1m,deep1m
-          python run.py --multirun dataset=sift1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
+          # python download.py --multirun dataset=sift1m,deep1m
+          # python run.py --multirun dataset=sift1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
+          python download.py dataset=siftsmall
+          python run.py --multirun dataset=siftsmall algo=linear,ivfpq,hnsw
           python plot.py
           cd ../
 
@@ -95,33 +108,34 @@ jobs:
           ec2metadata | grep ami-id: >> report.md
           echo -n "- " >> report.md
           ec2metadata | grep instance-type: >> report.md
-          cml-publish ./annbench/result_img/sift1m.png --md >> report.md
-          cml-publish ./annbench/result_img/deep1m.png --md >> report.md
+          # cml-publish ./annbench/result_img/sift1m.png --md >> report.md
+          # cml-publish ./annbench/result_img/deep1m.png --md >> report.md
+          cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
           cml-send-comment report.md
 
-      - name: Commit the result
-        run: |  
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+      # - name: Commit the result
+      #   run: |  
+      #     git config --local user.email "action@github.com"
+      #     git config --local user.name "GitHub Action"
           
-          DIR_NAME=`date '+%Y_%m_%d'`
-          mkdir -p ./result_img/$DIR_NAME
-          cp ./annbench/result_img/* ./result_img/$DIR_NAME
+      #     DIR_NAME=`date '+%Y_%m_%d'`
+      #     mkdir -p ./result_img/$DIR_NAME
+      #     cp ./annbench/result_img/* ./result_img/$DIR_NAME
 
-          # Report the EC2 spec as well
-          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
-          ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
-          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
-          ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
+      #     # Report the EC2 spec as well
+      #     echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+      #     ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
+      #     echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+      #     ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
 
-          git add result_img
-          git commit -m "Added artifacts from github actions" -a
+      #     git add result_img
+      #     git commit -m "Added artifacts from github actions" -a
 
-      - name: Push
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+      # - name: Push
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: ${{ github.ref }}
 
 
 
