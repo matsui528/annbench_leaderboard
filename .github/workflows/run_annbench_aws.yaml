@@ -61,23 +61,22 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '12'
-        run: npm i -g @dvcorg/cml
 
 
       # # Install CML functions
       # - name: Setup CML
       #   uses: iterative/setup-cml@v1
 
-      # # Install dependencies
-      # # Note that you need "sudo" for self-hosted runner
-      # - name: Setup libraries
-      #   run: |
-      #     sudo apt-get -y update
-      #     sudo apt-get -y upgrade
-      #     sudo apt-get -y install build-essential
+      # Install dependencies
+      # Note that you need "sudo" for self-hosted runner
+      - name: Setup libraries
+        run: |
+          #     sudo apt-get -y update
+          #     sudo apt-get -y upgrade
+          #     sudo apt-get -y install build-essential
 
-      #     # Install dvc commands
-      #     npm i -g @dvcorg/cml
+          # Install dvc commands
+          npm i -g @dvcorg/cml
 
       #     # EC2 environment is not brand-new. Would it be better to update everything?
       #     conda update conda
