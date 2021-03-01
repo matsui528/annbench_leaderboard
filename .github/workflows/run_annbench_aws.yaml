@@ -54,6 +54,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
+          python-version: 3.8
         
       # Install CML functions
       - name: Setup CML
