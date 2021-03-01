@@ -8,7 +8,7 @@ on:
       - aws_action
 
 jobs:
-  # Run on AWS EC2. Note that ami must be Deep Learning AMI.
+  # Run on AWS EC2. Note that ami should be usual latest-ubuntu
   # There could be some options:
   # - Ubuntu AMI:
   #     - pros: Simple
@@ -21,8 +21,8 @@ jobs:
   #     - cons: Some packages are old, such as git and coda. 
   # Currently, I selected the last option, DL-AMI.
   run_aws:
-#    runs-on: self-hosted
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+#    runs-on: ubuntu-latest
     steps:
       # # Currently, cml-publishing and git-commiting fail if git version is old (such as 2.17.1)
       # # If the git version is old, `.git` is not created
@@ -118,29 +118,29 @@ jobs:
           cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
           cml-send-comment report.md
 
-      # - name: Commit the result
-      #   run: |  
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
+      - name: Commit the result
+        run: |  
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           
-      #     DIR_NAME=`date '+%Y_%m_%d'`
-      #     mkdir -p ./result_img/$DIR_NAME
-      #     cp ./annbench/result_img/* ./result_img/$DIR_NAME
+          DIR_NAME=`date '+%Y_%m_%d'`
+          mkdir -p ./result_img/$DIR_NAME
+          cp ./annbench/result_img/* ./result_img/$DIR_NAME
 
-      #     # Report the EC2 spec as well
-      #     echo -n "- " >> ./result_img/$DIR_NAME/spec.md
-      #     ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
-      #     echo -n "- " >> ./result_img/$DIR_NAME/spec.md
-      #     ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
+          # Report the EC2 spec as well
+          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+          ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
+          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+          ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
 
-      #     git add result_img
-      #     git commit -m "Added artifacts from github actions" -a
+          git add result_img
+          git commit -m "Added artifacts from github actions" -a
 
-      # - name: Push
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: ${{ github.ref }}
+      - name: Push
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
 
 
 
