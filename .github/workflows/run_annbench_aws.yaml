@@ -57,10 +57,15 @@ jobs:
           python-version: 3.8
 
       # Install Node for npm (Should this be done in the "Setup CML"?)
+      # - name: Install Node
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: '12'
+
       - name: Install Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: '14'
 
       # Install CML functions
       - name: Setup CML
