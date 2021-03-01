@@ -54,7 +54,6 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
-          python-version: 3.8
         
       # Install CML functions
       - name: Setup CML
@@ -82,7 +81,7 @@ jobs:
       #     conda update --all
 
       - name: Run annbench
-        shell: bash -l {0}
+        shell: bash -l {0}   # To activate a conda-environment from setup-miniconda
         run: |
           which python 
           python --version
