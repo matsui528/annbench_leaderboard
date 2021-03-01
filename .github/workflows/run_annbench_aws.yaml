@@ -54,6 +54,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
+          python-version: 3.8
         
       # Install CML functions
       - name: Setup CML
@@ -98,6 +99,9 @@ jobs:
           python run.py --multirun dataset=siftsmall algo=linear,ivfpq,hnsw
           python plot.py
           cd ../
+
+          # Numpy check
+          python -c "import numpy;numpy.show_config()"
 
       # Note that `cml-send-comment` must be run on the original position (the root of this repo)
       - name: Publish result by CML
