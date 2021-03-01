@@ -10,34 +10,19 @@ on:
 jobs:
   # Run on AWS EC2. Note that ami should be usual latest-ubuntu
   # There could be some options:
-  # - Ubuntu AMI:
+  # - Ubuntu AMI with miniconda-action:
   #     - pros: Simple
-  #     - cons: Need to manually install docker or conda. Unlike ubuntu-latest in gh-action, ubuntu ami in aws does not have a docker
+  #     - cons: Some fundamental packeges must be installed manually, such as build-essential
   # - Deep Learning Base AMI + Anaconda-Docker
   #     - pros: Docker can be latest (i.e., latest conda, latest git, etc)
   #     - cons: AMI with Docker seem too much. ec2-native command such as ec2metadata cannot be called
   # - Deep Learning AMI
   #     - pros: No need to install other dependencies since anaconda has been already installed
-  #     - cons: Some packages are old, such as git and coda. 
-  # Currently, I selected the last option, DL-AMI.
+  #     - cons: Some packages are old, such as git and conda. 
+  # Currently, I selected the first option, usual-ubuntu + miniconda-action
   run_aws:
     runs-on: self-hosted
-#    runs-on: ubuntu-latest
     steps:
-      # # Currently, cml-publishing and git-commiting fail if git version is old (such as 2.17.1)
-      # # If the git version is old, `.git` is not created
-      # # Updating git solves the issue
-      # # https://github.com/actions/checkout/issues/335#issuecomment-763159788
-      # - name: Bug fix for git
-      #   run: |
-      #     git --version
-      #     sudo apt-get install -y software-properties-common
-      #     sudo apt-get update
-      #     sudo add-apt-repository -y ppa:git-core/ppa
-      #     sudo apt-get update
-      #     sudo apt-get install -y git
-      #     git --version
-
       # Clone this repository
       - name: Checkout this repository
         uses: actions/checkout@v2
@@ -56,16 +41,11 @@ jobs:
           miniconda-version: "latest"
           python-version: 3.8
 
-      # Install Node for npm (Should this be done in the "Setup CML"?)
+      # Install Node for npm
       - name: Install Node
         uses: actions/setup-node@v1
         with:
           node-version: '12'
-
-
-      # # Install CML functions
-      # - name: Setup CML
-      #   uses: iterative/setup-cml@v1
 
       # Install dependencies
       # Note that you need "sudo" for self-hosted runner
@@ -78,9 +58,12 @@ jobs:
           # Install dvc commands
           npm i -g @dvcorg/cml
 
-      #     # EC2 environment is not brand-new. Would it be better to update everything?
-      #     conda update conda
-      #     conda update --all
+      # # Install CML functions. Currently, this does not work for self-hosted runner
+      # # because of the sudo problem (this action tries to run sudo npm)
+      # # If this works, the above two actions can be replaced by this action
+      # - name: Setup CML
+      #   uses: iterative/setup-cml@v1
+
 
       - name: Run annbench
         shell: bash -l {0}   # To activate a conda-environment from setup-miniconda
@@ -94,10 +77,8 @@ jobs:
           cd annbench
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
-          # python download.py --multirun dataset=sift1m,deep1m
-          # python run.py --multirun dataset=sift1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
-          python download.py dataset=siftsmall
-          python run.py --multirun dataset=siftsmall algo=linear,ivfpq,hnsw
+          python download.py --multirun dataset=sift1m,deep1m
+          python run.py --multirun dataset=sift1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
           python plot.py
           cd ../
 
@@ -114,9 +95,8 @@ jobs:
           ec2metadata | grep ami-id: >> report.md
           echo -n "- " >> report.md
           ec2metadata | grep instance-type: >> report.md
-          # cml-publish ./annbench/result_img/sift1m.png --md >> report.md
-          # cml-publish ./annbench/result_img/deep1m.png --md >> report.md
-          cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+          cml-publish ./annbench/result_img/sift1m.png --md >> report.md
+          cml-publish ./annbench/result_img/deep1m.png --md >> report.md
           cml-send-comment report.md
 
       - name: Commit the result
