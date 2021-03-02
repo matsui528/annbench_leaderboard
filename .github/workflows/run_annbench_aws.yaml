@@ -78,8 +78,9 @@ jobs:
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
           #python download.py --multirun dataset=sift1m,deep1m
-          #python download.py --multirun dataset=siftsmall
-          python run.py --multirun dataset=sift1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
+          python download.py --multirun dataset=siftsmall
+          #python run.py --multirun dataset=sifts1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
+          python run.py --multirun dataset=siftsmall algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
           python plot.py
           cd ../
 
