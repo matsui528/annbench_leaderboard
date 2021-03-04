@@ -7,124 +7,180 @@ on:
     branches:
       - aws_action
 
+
 jobs:
-  # Run on AWS EC2. Note that ami should be usual latest-ubuntu
-  # There could be some options:
-  # - Ubuntu AMI with miniconda-action:
-  #     - pros: Simple
-  #     - cons: Some fundamental packeges must be installed manually, such as build-essential
-  # - Deep Learning Base AMI + Anaconda-Docker
-  #     - pros: Docker can be latest (i.e., latest conda, latest git, etc)
-  #     - cons: AMI with Docker seem too much. ec2-native command such as ec2metadata cannot be called
-  # - Deep Learning AMI
-  #     - pros: No need to install other dependencies since anaconda has been already installed
-  #     - cons: Some packages are old, such as git and conda. 
-  # Currently, I selected the first option, usual-ubuntu + miniconda-action
-  run_aws:
-    runs-on: self-hosted
+  deploy-runner:
+    runs-on: [ubuntu-latest]
     steps:
-      # Clone this repository
-      - name: Checkout this repository
-        uses: actions/checkout@v2
-
-      # Clone annbench on ./annbench
-      - name: Checkout annbench
-        uses: actions/checkout@v2
-        with:
-          repository: matsui528/annbench
-          path: annbench
-
-      # Install the latest miniconda. The "test" environment is activated 
-      - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          miniconda-version: "latest"
-          python-version: 3.8
-
-      # Install Node for npm
-      - name: Install Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: '12'
-
-      # Install dependencies
-      # Note that you need "sudo" for self-hosted runner
-      - name: Setup libraries
+      - uses: iterative/setup-cml@v1
+      - uses: actions/checkout@v2
+      - name: "Deploy runner on EC2"
+        shell: bash
+        env:
+          repo_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          sudo apt-get -y update
-          sudo apt-get -y upgrade
-          sudo apt-get -y install build-essential
+          cml-runner \
+          --cloud aws \
+          --cloud-region ap-northeast-1 \
+          --cloud-type=t2.micro \
+          --labels=cml-runner
 
-          # Install dvc commands
-          npm i -g @dvcorg/cml
-
-      # # Install CML functions. Currently, this does not work for self-hosted runner
-      # # because of the sudo problem (this action tries to run sudo npm)
-      # # If this works, the above two actions can be replaced by this action
-      # - name: Setup CML
-      #   uses: iterative/setup-cml@v1
-
-
-      - name: Run annbench
-        shell: bash -l {0}   # To activate a conda-environment from setup-miniconda
+  model-training: 
+    needs: deploy-runner
+    runs-on: [self-hosted,cml-runner]
+    container: docker://dvcorg/cml-py3:latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Train my model"
+        env:
+          repo_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
+          #pip install -r requirements.txt
+          #python train.py
+
           which python 
           python --version
           pip --version
-          which conda
-          conda --version
-         
-          cd annbench
-          pip install -r requirements.txt
-          conda install faiss-cpu -y -c pytorch
-          #python download.py --multirun dataset=sift1m,deep1m
-          python download.py --multirun dataset=sift1m
-          #python run.py --multirun dataset=sifts1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
-          python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
-          python plot.py
-          cd ../
 
-          # Numpy check
-          python -c "import numpy;numpy.show_config()"
-
-      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      - name: Publish result by CML
-        env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-        run: |
+          # Publish report with CML
           echo "## Run with an EC2 instance" >> report.md
           echo -n "- " >> report.md
           ec2metadata | grep ami-id: >> report.md
           echo -n "- " >> report.md
           ec2metadata | grep instance-type: >> report.md
-          for f in *.png; do
-            cml-publish ./annbench/result_img/$f --md >> report.md
-          done
+          echo -n "- " >> report.md
+          which python >> report.md
+          echo -n "- " >> report.md
+          python --version >> report.md
+          echo -n "- " >> report.md
+          pip --version >> report.md
+
+          #cat metrics.txt > report.md
           cml-send-comment report.md
 
-      - name: Commit the result
-        run: |  
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+
+
+
+# jobs:
+#   # Run on AWS EC2. Note that ami should be usual latest-ubuntu
+#   # There could be some options:
+#   # - Ubuntu AMI with miniconda-action:
+#   #     - pros: Simple
+#   #     - cons: Some fundamental packeges must be installed manually, such as build-essential
+#   # - Deep Learning Base AMI + Anaconda-Docker
+#   #     - pros: Docker can be latest (i.e., latest conda, latest git, etc)
+#   #     - cons: AMI with Docker seem too much. ec2-native command such as ec2metadata cannot be called
+#   # - Deep Learning AMI
+#   #     - pros: No need to install other dependencies since anaconda has been already installed
+#   #     - cons: Some packages are old, such as git and conda. 
+#   # Currently, I selected the first option, usual-ubuntu + miniconda-action
+#   run_aws:
+#     runs-on: self-hosted
+#     steps:
+#       # Clone this repository
+#       - name: Checkout this repository
+#         uses: actions/checkout@v2
+
+#       # Clone annbench on ./annbench
+#       - name: Checkout annbench
+#         uses: actions/checkout@v2
+#         with:
+#           repository: matsui528/annbench
+#           path: annbench
+
+#       # Install the latest miniconda. The "test" environment is activated 
+#       - name: Setup miniconda
+#         uses: conda-incubator/setup-miniconda@v2
+#         with:
+#           miniconda-version: "latest"
+#           python-version: 3.8
+
+#       # Install Node for npm
+#       - name: Install Node
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: '12'
+
+#       # Install dependencies
+#       # Note that you need "sudo" for self-hosted runner
+#       - name: Setup libraries
+#         run: |
+#           sudo apt-get -y update
+#           sudo apt-get -y upgrade
+#           sudo apt-get -y install build-essential
+
+#           # Install dvc commands
+#           npm i -g @dvcorg/cml
+
+#       # # Install CML functions. Currently, this does not work for self-hosted runner
+#       # # because of the sudo problem (this action tries to run sudo npm)
+#       # # If this works, the above two actions can be replaced by this action
+#       # - name: Setup CML
+#       #   uses: iterative/setup-cml@v1
+
+
+#       - name: Run annbench
+#         shell: bash -l {0}   # To activate a conda-environment from setup-miniconda
+#         run: |
+#           which python 
+#           python --version
+#           pip --version
+#           which conda
+#           conda --version
+         
+#           cd annbench
+#           pip install -r requirements.txt
+#           conda install faiss-cpu -y -c pytorch
+#           #python download.py --multirun dataset=sift1m,deep1m
+#           python download.py --multirun dataset=sift1m
+#           #python run.py --multirun dataset=sifts1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
+#           python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
+#           python plot.py
+#           cd ../
+
+#           # Numpy check
+#           python -c "import numpy;numpy.show_config()"
+
+#       # Note that `cml-send-comment` must be run on the original position (the root of this repo)
+#       - name: Publish result by CML
+#         env:
+#           repo_token: ${{ secrets.GITHUB_TOKEN }}
+#         run: |
+#           echo "## Run with an EC2 instance" >> report.md
+#           echo -n "- " >> report.md
+#           ec2metadata | grep ami-id: >> report.md
+#           echo -n "- " >> report.md
+#           ec2metadata | grep instance-type: >> report.md
+#           for f in *.png; do
+#             cml-publish ./annbench/result_img/$f --md >> report.md
+#           done
+#           cml-send-comment report.md
+
+#       - name: Commit the result
+#         run: |  
+#           git config --local user.email "action@github.com"
+#           git config --local user.name "GitHub Action"
           
-          DIR_NAME=`date '+%Y_%m_%d'`
-          mkdir -p ./result_img/$DIR_NAME
-          cp ./annbench/result_img/* ./result_img/$DIR_NAME
+#           DIR_NAME=`date '+%Y_%m_%d'`
+#           mkdir -p ./result_img/$DIR_NAME
+#           cp ./annbench/result_img/* ./result_img/$DIR_NAME
 
-          # Report the EC2 spec as well
-          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
-          ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
-          echo -n "- " >> ./result_img/$DIR_NAME/spec.md
-          ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
+#           # Report the EC2 spec as well
+#           echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+#           ec2metadata | grep ami-id: >> ./result_img/$DIR_NAME/spec.md
+#           echo -n "- " >> ./result_img/$DIR_NAME/spec.md
+#           ec2metadata | grep instance-type: >> ./result_img/$DIR_NAME/spec.md
 
-          git add result_img
-          git commit -m "Added artifacts from github actions" -a
+#           git add result_img
+#           git commit -m "Added artifacts from github actions" -a
 
-      - name: Push
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+#       - name: Push
+#         uses: ad-m/github-push-action@master
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           branch: ${{ github.ref }}
 
 
 
