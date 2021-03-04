@@ -8,7 +8,7 @@ A learderboard of [annbench](https://github.com/matsui528/annbench)
 - This CI is for a quick test of algorithms and datasets.
 
 ## Run by CI via aws ec2
-- Launch an aws instance with Deep Learning AMI
+- Launch an aws instance with a usual Ubuntu (not DL-ami)
 - Set the instance as a self-hosted runner at GitHub setting
 - Create a `aws_action` branch and open a PR
 - GitHub actions automatically run `annbench`, write a result on the PR page, and commited the result on this git repository
