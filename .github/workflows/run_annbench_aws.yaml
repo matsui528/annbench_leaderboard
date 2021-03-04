@@ -23,7 +23,7 @@ jobs:
         run: |
           cml-runner \
           --cloud aws \
-          --cloud-region ap-northeast-1 \
+          --cloud-region ap-northeast \
           --cloud-type=t2.micro \
           --labels=cml-runner
 
