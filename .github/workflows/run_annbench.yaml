@@ -86,8 +86,11 @@ jobs:
           # Install dvc commands
           npm i -g @dvcorg/cml
 
-      # Run the benchmark
+      # Run the benchmark and publish the result
+      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
       - name: Run annbench
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           which python 
           python --version
@@ -99,18 +102,11 @@ jobs:
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
           python download.py dataset=siftsmall
-          python run.py --multirun dataset=siftsmall algo=linear,annoy,hnsw,ivfpq,ivfpq4bit,scann
-          bash ../sanity_check.sh
-          python plot.py
-          cd ../
 
-      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      - name: Publish the result by CML
-        env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "## Run with a conda container" >> report.md
-          cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+          bash ../sanity_check.sh
+
+          cd ../
           cml-send-comment report.md
+
 
 
