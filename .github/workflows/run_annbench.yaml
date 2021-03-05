@@ -71,15 +71,11 @@ jobs:
           repository: matsui528/annbench
           path: annbench
 
-      # Install cml functions by action
-      - name: Install CML functions
-        uses: iterative/setup-cml@v1
-
-      # # Install Node for npm
-      # - name: Install Node
-      #   uses: actions/setup-node@v1
-      #   with:
-      #     node-version: '12'
+      # Install Node for npm
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
 
       # Install dependencies. Reccomend to run `apt-get update` first
       - name: Setup libraries
@@ -87,8 +83,8 @@ jobs:
           apt-get -y update
           apt-get -y install build-essential
 
-          # # Install dvc commands
-          # npm i -g @dvcorg/cml
+          # Install dvc commands
+          npm i -g @dvcorg/cml
 
       # Run the benchmark
       - name: Run annbench
