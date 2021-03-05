@@ -55,7 +55,7 @@ jobs:
   #         cml-send-comment report.md
 
 
-  # Run with an anaconda container. Need to install cml commands manually
+  # Run with an anaconda container. Note that cml-commands muste be installed manually
   run_conda:    
     runs-on: ubuntu-latest
     container: docker://continuumio/anaconda3:latest
@@ -71,7 +71,7 @@ jobs:
           repository: matsui528/annbench
           path: annbench
 
-      # Install Node for npm
+      # Install Node for npm (required for cml-command)
       - name: Install Node
         uses: actions/setup-node@v1
         with:
@@ -83,7 +83,7 @@ jobs:
           apt-get -y update
           apt-get -y install build-essential
 
-          # Install dvc commands
+          # Install cml commands
           npm i -g @dvcorg/cml
 
       # Run the benchmark and publish the result
@@ -102,6 +102,11 @@ jobs:
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
           python download.py dataset=siftsmall
+          python run.py --multirun dataset=siftsmall algo=annoy,hnsw,scann,linear,ivfpq,ivfpq4bit
+          python plot.py
+
+          echo "## All algorithms" >> ../report.md
+          cml-publish ./result_img/siftsmall.png --md >> ../report.md
 
           # Run benchmarks with several parameter combinations,
           # then output the result to report.md
