@@ -14,6 +14,7 @@ python plot.py
 cml-publish ./result_img/siftsmall.png --md >> ../report.md
 
 
+
 echo "## Sanity check for hnsw" >> ../report.md
 rm -rf output
 python run.py algo=hnsw dataset=siftsmall "algo.param_index=\
@@ -32,6 +33,7 @@ python plot.py
 cml-publish ./result_img/siftsmall.png --md >> ../report.md
 
 
+
 echo "## Sanity check for scann" >> ../report.md
 rm -rf output
 python run.py algo=scann dataset=siftsmall "algo.param_index=\
@@ -46,5 +48,31 @@ python run.py algo=scann dataset=siftsmall "algo.param_index=\
     {num_leaves: 400, reorder: 20},\
     {num_leaves: 400, reorder: 40}\
 ]"
+python plot.py
+cml-publish ./result_img/siftsmall.png --md >> ../report.md
+
+
+
+echo "## Sanity check for faiss" >> ../report.md
+rm -rf output
+python run.py algo=ivfpq dataset=siftsmall "algo.param_index=\
+[\
+    {M: 8, nlist: 100},\
+    {M: 8, nlist: 400},\
+    {M: 8, nlist: 1600},\
+    {M: 32, nlist: 100},\
+    {M: 32, nlist: 400},\
+    {M: 32, nlist: 1600}\
+]"
+python run.py algo=ivfpq4bit dataset=siftsmall "algo.param_index=\
+[\
+    {M: 16, nlist: 100},\
+    {M: 16, nlist: 400},\
+    {M: 16, nlist: 1600},\
+    {M: 64, nlist: 100},\
+    {M: 64, nlist: 400},\
+    {M: 64, nlist: 1600}\
+]"
+python run.py algo=linear dataset=siftsmall
 python plot.py
 cml-publish ./result_img/siftsmall.png --md >> ../report.md
