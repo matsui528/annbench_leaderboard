@@ -1,6 +1,6 @@
 # Should be run at "./annbench"
 
-echo "## Run with a conda container" >> report.md
+echo "## Run with a conda container" >> ../report.md
 
 python run.py algo=annoy dataset=siftsmall "algo.param_index=\
 [\
@@ -13,4 +13,4 @@ python run.py algo=annoy dataset=siftsmall "algo.param_index=\
 
 python plot.py
 
-cml-publish ./result_img/siftsmall.png --md >> report.md
+cml-publish ./result_img/siftsmall.png --md >> ../report.md
