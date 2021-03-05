@@ -100,6 +100,7 @@ jobs:
           conda install faiss-cpu -y -c pytorch
           python download.py dataset=siftsmall
           python run.py --multirun dataset=siftsmall algo=linear,annoy,hnsw,ivfpq,ivfpq4bit,scann
+          bash ../sanity_check.sh
           python plot.py
           cd ../
 
