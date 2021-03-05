@@ -13,4 +13,4 @@ python run.py algo=annoy dataset=siftsmall "algo.param_index=\
 
 python plot.py
 
-cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+cml-publish ./result_img/siftsmall.png --md >> report.md
