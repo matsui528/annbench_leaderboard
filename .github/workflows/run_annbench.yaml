@@ -103,6 +103,8 @@ jobs:
           conda install faiss-cpu -y -c pytorch
           python download.py dataset=siftsmall
 
+          # Run benchmarks with several parameter combinations,
+          # then output the result to report.md
           bash ../sanity_check.sh
 
           cd ../
