@@ -26,7 +26,7 @@ python run.py algo=hnsw dataset=siftsmall "algo.param_index=\
     {ef_construction: 200, M: 32},\
     {ef_construction: 400, M: 4},\
     {ef_construction: 400, M: 16},\
-    {ef_construction: 400, M: 32},\
+    {ef_construction: 400, M: 32}\
 ]"
 python plot.py
 cml-publish ./result_img/siftsmall.png --md >> ../report.md
@@ -44,7 +44,7 @@ python run.py algo=scann dataset=siftsmall "algo.param_index=\
     {num_leaves: 200, reorder: 40},\
     {num_leaves: 400, reorder: 0},\
     {num_leaves: 400, reorder: 20},\
-    {num_leaves: 400, reorder: 40},\
+    {num_leaves: 400, reorder: 40}\
 ]"
 python plot.py
 cml-publish ./result_img/siftsmall.png --md >> ../report.md
