@@ -73,7 +73,7 @@ jobs:
 
       # Install cml functions by action
       - name: Install CML functions
-        uses: iterative/cml-action@v1
+        uses: iterative/setup-cml@v1
 
       # # Install Node for npm
       # - name: Install Node
