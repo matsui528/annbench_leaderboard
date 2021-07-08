@@ -84,7 +84,8 @@ jobs:
           apt-get -y install build-essential
 
           # Install cml commands
-          npm i -g @dvcorg/cml
+          # npm i -g @dvcorg/cml
+          sudo npm i -g @dvcorg/cml
 
       # Run the benchmark and publish the result
       # Note that `cml-send-comment` must be run on the original position (the root of this repo)
