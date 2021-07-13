@@ -20,6 +20,25 @@ jobs:
           miniconda-version: "latest"
           python-version: 3.8
 
+      - name: Check conda with activating shell
+        shell: bash -l {0}
+        run: |
+          which python 
+          python --version
+          pip --version
+          which conda
+          conda --version
+
+      - name: Check conda w/o activating shell
+        run: |
+          which python 
+          python --version
+          pip --version
+          which conda
+          conda --version
+
+        
+
       # Clone this repository
       - name: Checkout this repository
         uses: actions/checkout@v2
