@@ -14,30 +14,12 @@ jobs:
     container: docker://dvcorg/cml:0-dvc2-base1-gpu
     steps:
       # Install the latest miniconda. The "test" environment is activated 
-      # - name: Setup miniconda
-      #   uses: conda-incubator/setup-miniconda@v2
-      #   with:
-      #     miniconda-version: "latest"
-      #     python-version: 3.8
-
-      # - name: Check conda with activating shell
-      #   shell: bash -l {0}
-      #   run: |
-      #     which python 
-      #     python --version
-      #     pip --version
-      #     which conda
-      #     conda --version
-
-      - name: Check conda w/o activating shell
-        run: |
-          which python 
-          python --version
-          pip --version
-          which conda
-          conda --version
-
-        
+      # To use the conda shell, need to write "shell: bash -l {0}"
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniconda-version: "latest"
+          python-version: 3.8        
 
       # Clone this repository
       - name: Checkout this repository
@@ -58,7 +40,9 @@ jobs:
           apt-get -y install libpython3-dev
 
       # Run the benchmark and publish the result
+      # To use caonda, shell need to be specified
       - name: Run annbench
+        shell: bash -l {0}
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
