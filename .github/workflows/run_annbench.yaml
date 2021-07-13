@@ -8,7 +8,7 @@ on:
       - default_action
 
 jobs:
-  # Run with a CML container. Easy and simple, but w/o anaconda
+  # Run with a CML container. Easy and simple, but need to setup miniconda-action
   run_cml:    
     runs-on: ubuntu-latest
     container: docker://dvcorg/cml:0-dvc2-base1-gpu
@@ -38,28 +38,35 @@ jobs:
           # For pybind11
           apt-get -y install libpython3-dev
 
-      # Run the benchmark
+      # Run the benchmark and publish the result
       - name: Run annbench
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           which python 
           python --version
           pip --version
+          which conda
+          conda --version
 
           cd annbench
           pip install -r requirements.txt
+          conda install faiss-cpu -y -c pytorch
           python download.py dataset=siftsmall
-          python run.py --multirun dataset=siftsmall algo=annoy,hnsw,scann
+          python run.py --multirun dataset=siftsmall algo=annoy,hnsw,scann,linear,ivfpq,ivfpq4bit
           python plot.py
-          cd ../
 
-      # Note that `cml-send-comment` must be run on the original position (the root of this repo)
-      - name: Publish the result by CML
-        env:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "## Run with a cml container" >> report.md
-          cml-publish ./annbench/result_img/siftsmall.png --md >> report.md
+          echo "## All algorithms" >> ../report.md
+          cml-publish ./result_img/siftsmall.png --md >> ../report.md
+
+          # Run benchmarks with several parameter combinations,
+          # then output the result to report.md
+          bash ../sanity_check.sh
+
+          cd ../
           cml-send-comment report.md
+
+
 
 
   # Run with an anaconda container. Note that cml-commands muste be installed manually
