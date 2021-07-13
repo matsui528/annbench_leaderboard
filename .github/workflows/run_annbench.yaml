@@ -77,6 +77,10 @@ jobs:
         with:
           node-version: '12'
 
+      # Setup CML action. By this, we can run cml-commands
+      - name: Setup CML action
+        uses: iterative/setup-cml@v1
+
       # Install dependencies. Reccomend to run `apt-get update` first
       - name: Setup libraries
         run: |
@@ -84,7 +88,7 @@ jobs:
           apt-get -y install build-essential
 
           # Install cml commands
-          npm i -g @dvcorg/cml
+          # npm i -g @dvcorg/cml
 
       # Run the benchmark and publish the result
       # Note that `cml-send-comment` must be run on the original position (the root of this repo)
