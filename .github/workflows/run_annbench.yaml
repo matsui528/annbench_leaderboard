@@ -12,8 +12,14 @@ jobs:
   run_cml:    
     runs-on: ubuntu-latest
     container: docker://dvcorg/cml:0-dvc2-base1-gpu
-    # container: docker://dvcorg/cml-py3:latest
     steps:
+      # Install the latest miniconda. The "test" environment is activated 
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniconda-version: "latest"
+          python-version: 3.8
+
       # Clone this repository
       - name: Checkout this repository
         uses: actions/checkout@v2
@@ -59,7 +65,7 @@ jobs:
   # Run with an anaconda container. Note that cml-commands muste be installed manually
   # Currently, there seems some error for nodejs. 
 
-  # run_conda:    
+    # run_conda:    
   #   runs-on: ubuntu-latest
   #   container: docker://continuumio/anaconda3:latest
   #   steps:
