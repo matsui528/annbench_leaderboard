@@ -1,2 +1,0 @@
-- ami-id: ami-0df99b3a8349462c6
-- instance-type: c5.4xlarge
