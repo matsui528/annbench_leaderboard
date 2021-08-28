@@ -43,7 +43,7 @@ jobs:
 
       # Install Node for npm
       - name: Install Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: '12'
 
@@ -77,10 +77,10 @@ jobs:
           cd annbench
           pip install -r requirements.txt
           conda install faiss-cpu -y -c pytorch
-          #python download.py --multirun dataset=sift1m,deep1m
-          python download.py --multirun dataset=sift1m
-          #python run.py --multirun dataset=sifts1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
-          python run.py --multirun dataset=sift1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit
+          python download.py --multirun dataset=sift1m,deep1m
+          #python download.py --multirun dataset=siftsmall
+          python run.py --multirun dataset=sift1m,deep1m algo=linear,annoy,ivfpq,hnsw,ivfpq4bit,pq,pq4bit
+          #python run.py --multirun dataset=siftsmall algo=pq
           python plot.py
           cd ../
 
