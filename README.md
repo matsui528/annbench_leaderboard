@@ -21,9 +21,9 @@ A learderboard of [annbench](https://github.com/matsui528/annbench)
 
 
 ### sift1m
-![](result_img/2021_02_23/sift1m.png)
+![](result_img/2021_08_28/sift1m.png)
 
 
 ### deep1m
-![](result_img/2021_02_23/deep1m.png)
+![](result_img/2021_08_28/deep1m.png)
 
